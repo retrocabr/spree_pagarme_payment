@@ -1,0 +1,71 @@
+<% content_for :page_actions do %>
+
+<% end %>
+
+<% pagarme_payment = payment.pagarme_payment %>
+<fieldset data-hook="creditcard">
+	<legend>Pagar.me</legend>
+
+	<table class="index">
+		<tr>
+			<th>URL para efetuar o pagamento</th>
+		</tr>
+		<tr>
+			<td>
+			
+			<% method = pagarme_payment.payment_method if pagarme_payment %>
+			<% if method && pagarme_payment.within_expiration_date? %>
+				<%= link_to "Reimprimir boleto", pagarme_payment.boleto_url %>
+			<% elsif method %>
+				<%= link_to "Efetuar pagamento", checkout_order_path(payment.order) %>
+			<% else method.nil? %>
+				Não existe...
+			<% end %>
+			
+			</td>
+		</tr>
+	</table>
+
+	<% transaction = pagarme_payment.transaction %>
+	<% if transaction %>
+		<table class="index">
+			<tr>
+				<th>Data de criação</th>
+				<th>Meio de Pagamento</th>
+				<th>Estado</th>
+				<th>Transaction</th>
+				<th>Valor pago</th>
+				<th>Última atualização</th>
+			</tr>
+			
+			<tr>
+				<td><%= transaction.date_created.to_datetime.strftime("%d/%m/%Y - %H:%M:%S") %></td>
+				<td>
+					<% if transaction.payment_method == "credit_card" %>
+						Cartão de Crédito<br />
+						<%= transaction.card_brand %>
+					<% elsif transaction.payment_method == "boleto" %>
+						Boleto<br />
+						(válido até <%= transaction.boleto_expiration_date.to_datetime.strftime("%d/%m/%Y") %>)
+					<% end %>
+				</td>
+				<td>
+					<%= transaction.status %>
+					<% if transaction.status == 'refused' %>
+						(<%= transaction.status_reason %>)
+					<% end %>
+					<%# t("pagseguro_status.#{PagSeguro::Transaction.status_for(notification.status.to_i)}") %>
+				</td>
+				<td><%= transaction.id %></td>
+				<td><%= Spree::Money.new( (transaction.paid_amount.to_f/100) , { :currency=> 'BRL' }) %></td>
+				<td><%= transaction.date_updated.to_datetime.strftime("%d/%m/%Y - %H:%M:%S") if transaction.date_updated %></td>
+			</tr>
+		</table>
+	<% else %>
+		<table class="index">
+			<tr>
+				<td>Transação não encontrada! Pagamento não foi processado corretamente.</td>
+			</tr>
+		</table>
+	<% end %>
+</fieldset>
