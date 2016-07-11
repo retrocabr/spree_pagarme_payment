@@ -50,9 +50,9 @@ module Spree
 							:number => a.phone
 						}
 					},
-					:split_rules => [
-						{ recipient_id: ENV['RETROCA_RECIPIENT_ID'], percentage: 100 }
-					],
+					# :split_rules => [
+					# 	{ recipient_id: ENV['RETROCA_RECIPIENT_ID'], percentage: 100 }
+					# ],
 					:metadata => {
 						:order => order.number
 					}

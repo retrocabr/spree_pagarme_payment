@@ -7,7 +7,7 @@
 
 <%= hidden_field_tag("pagarme_payment", 1) %>
 <%= form.fields_for :payments, Spree::Payment.new do |p| %>
-<%= p.hidden_field :payment_method_id, :value => 1 # Spree::PaymentMethod.find_by_name("Pagar.me").id
+<%= p.hidden_field :payment_method_id, :value => Spree::PaymentMethod.find_by_name("Pagar.me").id
 %>
 	<%= p.fields_for :pagarme_payment, p.object.build_pagarme_payment do |pp| %>
 		<%= pp.hidden_field :card_hash %>
