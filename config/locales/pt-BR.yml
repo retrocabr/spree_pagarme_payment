@@ -1,0 +1,18 @@
+pt-BR:
+  pagarme:
+    payment_url: URL para efetuar o pagamento
+    reprint_boleto: Reimprimir boleto
+    retry_payment: Efetuar pagamento
+    payment_url_doesnt_exist: Não existe...
+    method: Meio de Pagamento
+    method_credit_card: Cartão de Crédito
+    method_boleto: Boleto
+    valid_until: válido até
+    amount_paid: Valor pago
+    last_update: Última atualização
+    errors:
+      transaction_not_found: Transação não encontrada! Pagamento não foi processado corretamente.
+    states:
+      waiting_payment: Aguardando pagamento
+      class:
+        waiting_payment: label-processing

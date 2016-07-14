@@ -1,0 +1,18 @@
+en:
+  pagarme:
+    payment_url: Customer's payment URL
+    reprint_boleto: Re-Print Boleto
+    retry_payment: Retry Payment
+    payment_url_doesnt_exist: Doesn't exist...
+    method: Payment method
+    method_credit_card: Credit Card
+    method_boleto: Boleto
+    valid_until: Expires at
+    amount_paid: Amount Paid
+    last_update: Last update
+    errors:
+      transaction_not_found: Transaction not found! Payment was not processed correctly
+    states:
+      waiting_payment: Waiting Payment
+      class:
+        waiting_payment: label-processing

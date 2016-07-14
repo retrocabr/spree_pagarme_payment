@@ -12,20 +12,25 @@ Spree::Payment.class_eval do
 
 	def update_state
 		pp = pagarme_payment
+		if transaction_id && pp.transaction_id
+			self.update_column(:transaction_id, pp.transaction_id)
+		end
 		case pp.state
 			when 'processing'
-				self.started_processing
+				started_processing if state != "processing"
 			when 'authorized','paid'
-				self.complete
-				Spree::OrderMailer.payment_confirmation_email(order).deliver
+				if state != "completed"
+					complete
+					Spree::OrderMailer.payment_confirmation_email(order).deliver
+				end
 			when 'refunded'
-				self.complete
+				complete if can_complete?
 			when 'pending_refund'
-				self.complete
+				complete if can_complete?
 			when 'waiting_payment'
-				self.pend
+				pend if can_pend?
 			when 'refused'
-				self.failure
+				failure if can_failure?
 				transaction = pp.transaction
 				message =  "Pagamento (#{self.id}) do Pedido (#{order.number}) recusado. \n"
 				message += "Reason: #{transaction.status_reason} \n" if transaction

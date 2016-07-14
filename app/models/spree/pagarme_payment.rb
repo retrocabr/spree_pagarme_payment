@@ -106,8 +106,11 @@ module Spree
 			self.boleto_barcode = transaction.boleto_barcode
 			self.save
 
-			order.payment_total = order.total
-			order.save
+			# order.payment_total = order.total
+			# order.save
+
+			payment.response_code = transaction.id
+			payment.save
 
 			payment.update_state
 
@@ -128,7 +131,7 @@ module Spree
 			date += inc.day
 			while (date.wday % 7 == 0) or (date.wday % 7 == 6) do
 				date += inc.day
-			end	 
+			end
 			date
 		end
 

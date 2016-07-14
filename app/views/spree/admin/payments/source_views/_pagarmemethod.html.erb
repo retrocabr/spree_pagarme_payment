@@ -6,66 +6,79 @@
 <fieldset data-hook="creditcard">
 	<legend>Pagar.me</legend>
 
-	<table class="index">
-		<tr>
-			<th>URL para efetuar o pagamento</th>
-		</tr>
-		<tr>
-			<td>
-			
-			<% method = pagarme_payment.payment_method if pagarme_payment %>
-			<% if method && pagarme_payment.within_expiration_date? %>
-				<%= link_to "Reimprimir boleto", pagarme_payment.boleto_url %>
-			<% elsif method %>
-				<%= link_to "Efetuar pagamento", checkout_order_path(payment.order) %>
-			<% else method.nil? %>
-				Não existe...
-			<% end %>
-			
-			</td>
-		</tr>
-	</table>
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title"><%= t('pagarme.payment_url') %></h3>
+		</div>
+		<table class="table table-condensed table-bordered">
+			<tr>
+				<td>
+					<% method = pagarme_payment.payment_method if pagarme_payment %>
+					<% if method && pagarme_payment.within_expiration_date? %>
+						<%= link_to t("pagarme.reprint_boleto"), pagarme_payment.boleto_url %>
+					<% elsif method %>
+						<%= link_to t("pagarme.retry_payment"), order_path(payment.order) %>
+					<% else method.nil? %>
+						<%= t('pagarme.payment_url_doesnt_exist') %>
+					<% end %>
+				</td>
+			</tr>
+		</table>
+	</div>
+
 
 	<% transaction = pagarme_payment.transaction %>
 	<% if transaction %>
-		<table class="index">
-			<tr>
-				<th>Data de criação</th>
-				<th>Meio de Pagamento</th>
-				<th>Estado</th>
-				<th>Transaction</th>
-				<th>Valor pago</th>
-				<th>Última atualização</th>
-			</tr>
-			
-			<tr>
-				<td><%= transaction.date_created.to_datetime.strftime("%d/%m/%Y - %H:%M:%S") %></td>
-				<td>
-					<% if transaction.payment_method == "credit_card" %>
-						Cartão de Crédito<br />
-						<%= transaction.card_brand %>
-					<% elsif transaction.payment_method == "boleto" %>
-						Boleto<br />
-						(válido até <%= transaction.boleto_expiration_date.to_datetime.strftime("%d/%m/%Y") %>)
-					<% end %>
-				</td>
-				<td>
-					<%= transaction.status %>
-					<% if transaction.status == 'refused' %>
-						(<%= transaction.status_reason %>)
-					<% end %>
-					<%# t("pagseguro_status.#{PagSeguro::Transaction.status_for(notification.status.to_i)}") %>
-				</td>
-				<td><%= transaction.id %></td>
-				<td><%= Spree::Money.new( (transaction.paid_amount.to_f/100) , { :currency=> 'BRL' }) %></td>
-				<td><%= transaction.date_updated.to_datetime.strftime("%d/%m/%Y - %H:%M:%S") if transaction.date_updated %></td>
-			</tr>
-		</table>
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title"><%= Spree.t(:summary) %></h3>
+			</div>
+			<table class="table table-condensed table-bordered">
+				<tr>
+					<th width="35%"><%= Spree.t(:created_at) %>:</th>
+					<td><%= transaction.date_created.to_datetime.strftime("%d/%m/%Y - %H:%M:%S") %></td>
+				</tr>
+				<tr>
+					<th><%= t('pagarme.method') %>:</th>
+					<td>
+						<%= t("pagarme.method_#{transaction.payment_method}") %>
+						<% if transaction.payment_method == "credit_card" %>
+							(<%= transaction.card_brand %>)
+						<% elsif transaction.payment_method == "boleto" %>
+							(<%= t('pagarme.valid_until') %> <%= transaction.boleto_expiration_date.to_datetime.strftime("%d/%m/%Y") %>)
+						<% end %>
+					</td>
+				</tr>
+				<tr>
+					<th><%= Spree.t(:state) %>:</th>
+					<td>
+						<span class="label <%= t("pagarme.states.class.#{transaction.status}") %>"><%= t("pagarme.states.#{transaction.status}") %></span>
+						<% if transaction.status == 'refused' %>
+							(<%= transaction.status_reason %>)
+						<% end %>
+						<%# t("pagseguro_status.#{PagSeguro::Transaction.status_for(notification.status.to_i)}") %>
+					</td>
+				</tr>
+				<tr>
+					<th>Transaction ID:</th>
+					<td><%= transaction.id %></td>
+				</tr>
+				<tr>
+					<th><%= t('pagarme.amount_paid') %>:</th>
+					<td><%= Spree::Money.new( (transaction.paid_amount.to_f/100) , { :currency=> 'BRL' }) %></td>
+				</tr>
+				<tr>
+					<th><%= t('pagarme.last_update') %>:</th>
+					<td><%= transaction.date_updated.to_datetime.strftime("%d/%m/%Y - %H:%M:%S") if transaction.date_updated %></td>
+				</tr>
+			</table>
+		</div>
 	<% else %>
-		<table class="index">
+		<table class="table table-condensed table-bordered">
 			<tr>
-				<td>Transação não encontrada! Pagamento não foi processado corretamente.</td>
+				<td><%= t('pagarme.errors.transaction_not_found') %></td>
 			</tr>
 		</table>
 	<% end %>
+
 </fieldset>
