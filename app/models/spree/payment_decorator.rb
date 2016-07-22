@@ -12,9 +12,6 @@ Spree::Payment.class_eval do
 
 	def update_state
 		pp = pagarme_payment
-		if transaction_id && pp.transaction_id
-			self.update_column(:transaction_id, pp.transaction_id)
-		end
 		case pp.state
 			when 'processing'
 				started_processing if state != "processing"
