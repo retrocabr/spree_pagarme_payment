@@ -30,7 +30,7 @@ module Spree
 				# postback = "http://requestb.in/1hx7qum1"
 
 				params = {
-					:amount => (order.total * 100).to_i,
+					:amount => (self.charge_amount * 100).to_i,
 					:payment_method => self.payment_method,
 					:postback_url => postback,
 					:async => true,

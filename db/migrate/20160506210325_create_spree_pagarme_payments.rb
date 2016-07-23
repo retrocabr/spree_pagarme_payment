@@ -10,6 +10,7 @@ class CreateSpreePagarmePayments < ActiveRecord::Migration
 			t.string  :boleto_url
 			t.string  :boleto_barcode
 			t.string  :postback
+			t.decimal :charge_amount
 		end
 	end
 end
