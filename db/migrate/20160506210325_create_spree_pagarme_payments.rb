@@ -4,7 +4,7 @@ class CreateSpreePagarmePayments < ActiveRecord::Migration
 			t.integer :payment_id
 			t.string  :payment_method
 			t.integer :transaction_id
-			t.string  :card_hash
+			t.text    :card_hash, :limit => nil
 			t.string  :state, :default => 'pending'
 			t.integer :installments, :default => 0
 			t.string  :boleto_url
