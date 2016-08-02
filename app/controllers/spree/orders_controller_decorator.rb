@@ -17,7 +17,7 @@ Spree::OrdersController.class_eval do
 					message += "Order is canceled! \n"
 				end
 
-				pagarme_payment = Spree::PagarmePayment.find_by_transaction_id(params[:id])
+				pagarme_payment = Spree::OrderMailer.find_by_transaction_id(params[:id])
 				if pagarme_payment && params[:object] == "transaction"
 					if pagarme_payment.payment.order.id == order.id
 						if pagarme_payment.state != params[:current_status]
@@ -57,14 +57,14 @@ Spree::OrdersController.class_eval do
 
 			if error
 				message += "Parameters: #{params}"
-				Spree::PaymentMailer.error_notification("Pagar.me Postback Error", message).deliver
+				Spree::OrderMailer.error_notification("Pagar.me Postback Error", message).deliver
 			end
 
 			render json: params
 		else
 			message = "Validation failed! \nParameters: #{params}"
 
-			Spree::PaymentMailer.error_notification("Pagar.me Postback Error - Validation", message).deliver
+			Spree::OrderMailer.error_notification("Pagar.me Postback Error - Validation", message).deliver
 			render_invalid_postback_response
 		end
 	end
