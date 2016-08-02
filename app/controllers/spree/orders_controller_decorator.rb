@@ -7,7 +7,7 @@ Spree::OrdersController.class_eval do
 		if valid_postback?
 			PagarMe.api_key = ENV['PAGARME_API_KEY']
 
-			order = Spree::Order.find_by_number(params[:id])
+			order = Spree::Order.find_by_number(params[:order_id])
 
 			error = false
 
@@ -57,14 +57,14 @@ Spree::OrdersController.class_eval do
 
 			if error
 				message += "Parameters: #{params}"
-				# Spree::OrderMailer.notify_admin("Pagar.me Postback Error", message).deliver
+				Spree::PaymentMailer.error_notification("Pagar.me Postback Error", message).deliver
 			end
 
 			render json: params
 		else
 			message = "Validation failed! \nParameters: #{params}"
 
-			# Spree::OrderMailer.notify_admin("Pagar.me Postback Error - Validation", message).deliver
+			Spree::PaymentMailer.error_notification("Pagar.me Postback Error - Validation", message).deliver
 			render_invalid_postback_response
 		end
 	end

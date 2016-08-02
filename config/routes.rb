@@ -1,6 +1,3 @@
 Spree::Core::Engine.routes.draw do
-	# match "orders/:order_id/postback", :to => "pagarme_payment#postback", method: :post, :as => :pagarme_postback
-	resources :orders do
-		post 'postback', :on => :member
-	end
+	post "orders/:order_id/postback", :to => "pagarme_payment#postback" #, :as => :pagarme_postback
 end

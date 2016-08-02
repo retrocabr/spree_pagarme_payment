@@ -21,7 +21,16 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Set these environment variables:
+
+```ruby
+# Admin emails to receive error payment messages
+ENV['ADMIN_EMAILS'] = "spree@example.com,spree@google.com"
+
+# Pagarme keys
+ENV[PAGARME_API_KEY]="YOUR_API_KEY_HERE"
+ENV[PAGARME_CRYPTKEY]="YOUR_ENCRYPTION_KEY_HERE"
+```
 
 ## Contributing
 

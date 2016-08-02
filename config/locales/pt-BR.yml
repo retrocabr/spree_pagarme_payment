@@ -13,6 +13,12 @@ pt-BR:
     errors:
       transaction_not_found: Transação não encontrada! Pagamento não foi processado corretamente.
     states:
+      authorized: Autorizado
+      paid: Pago
+      pending_refund: Aguardando estorno
+      processing: Processando
+      refunded: Estornado
+      refused: Recusado
       waiting_payment: Aguardando pagamento
       class:
         waiting_payment: label-processing
