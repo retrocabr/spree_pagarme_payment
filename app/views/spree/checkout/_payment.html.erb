@@ -13,8 +13,8 @@
 		<%= pp.hidden_field :card_hash %>
 		<%= pp.hidden_field :payment_method %>
 		<%= pp.hidden_field :installments %>
-		<%# postback_link = postback_order_url(@order.number, { :protocol => "http" }) %>
-		<% postback_link = ENV['TEST_POSTBACK'] %>
+		<% postback_link = "http://www.retroca.com.br/orders/#{@order.number}/postback" %>
+		<%# postback_link = ENV['TEST_POSTBACK'] %>
 		<%= pp.hidden_field :postback, :value => postback_link %>
 	<% end %>
 <% end %>
