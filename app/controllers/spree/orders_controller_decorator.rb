@@ -18,6 +18,12 @@ Spree::OrdersController.class_eval do
 				end
 
 				pagarme_payment = Spree::PagarmePayment.find_by_transaction_id(params[:id])
+
+				unless pagarme_payment
+					amount = params[:transaction][:amount].to_i/100.0
+					payment = order.payments.create(amount: amount, payment_method_id: 2, state: "pending")
+					pagarme_payment = Spree::PagarmePayment.create(payment_id: payment.id, payment_method: params[:transaction][:payment_method], transaction_id: params[:id], state: params[:old_status], installments: params[:transaction][:installments], boleto_url: params[:transaction][:boleto_url], boleto_barcode: params[:transaction][:boleto_barcode], postback: params[:transaction][:postback_url], charge_amount: amount)
+				end
 				if pagarme_payment && params[:object] == "transaction"
 					if pagarme_payment.payment.order.id == order.id
 						if pagarme_payment.state != params[:current_status]
@@ -47,7 +53,7 @@ Spree::OrdersController.class_eval do
 						error = true
 					end
 				else
-					message += "ERROR: Pagarme payment with transaction_id (#{params[:id]}) not found \n"
+					message += "ERROR: Pagarme payment with transaction_id (#{params[:id]}) not found and couldn't create a new payment \n"
 					error = true
 				end
 			else
