@@ -13,8 +13,10 @@
 		<%= pp.hidden_field :card_hash %>
 		<%= pp.hidden_field :payment_method %>
 		<%= pp.hidden_field :installments %>
+		<% if Rails.env.production? && ENV['USE_TEST_POSTBACK'] == 'false' %>
 		<% postback_link = "http://www.retroca.com.br/orders/#{@order.number}/postback" %>
-		<%# postback_link = ENV['TEST_POSTBACK'] %>
+		<% else %>
+		<% postback_link = ENV['TEST_POSTBACK'] %>
 		<%= pp.hidden_field :postback, :value => postback_link %>
 	<% end %>
 <% end %>
