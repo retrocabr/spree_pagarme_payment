@@ -41,7 +41,9 @@ Spree::OrdersController.class_eval do
 									pagarme_payment.payment_method
 							end
 
+							order.updater.update_payment_total
 							order.updater.update_payment_state
+							order.updater.update_payment_total
 							order.save
 
 							# store_credit_payment = order.store_credit_amount - order.store_credit_discount
