@@ -48,7 +48,8 @@ module Spree
 						:phone => {
 							:ddd => a.phone_ddd,
 							:number => a.phone
-						}
+						},
+						:born_at => a.birth_date.to_date.strftime("%m-%d-%Y")
 					},
 					# :split_rules => [
 					# 	{ recipient_id: ENV['RETROCA_RECIPIENT_ID'], percentage: 100 }
