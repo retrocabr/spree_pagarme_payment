@@ -1,7 +1,6 @@
 <% content_for :head do %>
 <script src="https://assets.pagar.me/checkout/checkout.js"></script>
-<% pagarme_methods = 'credit_card,boleto' # @order.bank_bill_allowed?(@order) ? 'credit_card,boleto' : 'credit_card'
-%>
+<% pagarme_methods = 'credit_card,boleto' %>
 <%= javascript_include_tag 'spree/frontend/spree_pagarme_payment', { :id => "pagarme_script", 'data-crypt' => ENV['PAGARME_CRYPTKEY'], 'data-paymentmethods' => pagarme_methods } %>
 <% end %>
 
@@ -13,10 +12,8 @@
 		<%= pp.hidden_field :card_hash %>
 		<%= pp.hidden_field :payment_method %>
 		<%= pp.hidden_field :installments %>
-		<% if Rails.env.production? && ENV['USE_TEST_POSTBACK'] == 'false' %>
-		<% postback_link = "http://www.retroca.com.br/orders/#{@order.number}/postback" %>
-		<% else %>
-		<% postback_link = ENV['TEST_POSTBACK'] %>
-		<%= pp.hidden_field :postback, :value => postback_link %>
+		<%# postback_url = ENV['TEST_POSTBACK'] %>
+		<% postback_url = order_postback_path(@order) %>
+		<%= pp.hidden_field :postback, :value => postback_url %>
 	<% end %>
 <% end %>
