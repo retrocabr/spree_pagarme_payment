@@ -2,7 +2,7 @@
 require 'pagarme'
 
 module Spree
-	class PagarmePayment < ActiveRecord::Base
+	class PagarmePayment < Spree::Base
 		self.table_name = "spree_pagarme_payments"
 		# attr_accessible :payment_id, :payment_method, :card_hash, :transaction_id, :state, :installments, :boleto_url, :boleto_barcode, :postback
 		belongs_to :payment

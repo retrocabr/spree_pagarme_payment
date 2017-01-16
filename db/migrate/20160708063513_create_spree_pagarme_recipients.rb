@@ -5,5 +5,6 @@ class CreateSpreePagarmeRecipients < ActiveRecord::Migration
     	t.string  :pagarme_id
     	t.string  :recipient_type, :default => 'consignment'
     end
+    add_column :spree_products, :recipient_id, :string
   end
 end

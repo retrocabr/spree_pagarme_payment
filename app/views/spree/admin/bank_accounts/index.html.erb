@@ -1,0 +1,42 @@
+<%= render partial: 'spree/admin/users/sidebar', locals: { current: :bank_accounts } %>
+
+<% content_for :page_title do %>
+    <%= link_to @user.email, spree.edit_admin_user_url(@user) %> /
+    Contas Bancárias
+<% end %>
+
+<% content_for :page_actions do %>
+    <%= button_link_to "Nova Conta Bancária", new_admin_user_bank_account_path(@user), class: "btn-success", icon: 'add' %>
+<% end %>
+
+<% if @bank_accounts.any? %>
+  <table class="table">
+    <thead>
+      <th style="width:120px;"><%= Spree.t(:created_at) %></th>
+      <th>Descrição</th>
+      <th data-hook="admin_store_credits_index_header_actions" class="actions" style="width: 90px;"></th>
+    <thead>
+    <tbody>
+      <% @bank_accounts.each do |bank_account| %>
+        <tr>
+          <td><%= l bank_account.created_at.to_date %></td>
+          <td><%= bank_account.to_s %></td>
+          <td class="actions actions-2 text-right" data-hook="admin_bank_account_index_row_actions">
+            <% if can?(:edit, bank_account) %>
+              <%= link_to_edit_url spree.edit_admin_user_bank_account_path(@user, bank_account), no_text: true %>
+            <% end %>
+            <% if can?(:destroy, bank_account) && bank_account %>
+              <%= link_to_delete bank_account, no_text: true, url: spree.admin_user_bank_account_path(@user, bank_account) %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <div class="alert alert-info no-objects-found">
+    <%= Spree.t(:no_resource_found, resource: plural_resource_name(Spree::BankAccount)) %>
+  </div>
+<% end %>
+
+<%= render 'spree/admin/users/lifetime_stats' %>

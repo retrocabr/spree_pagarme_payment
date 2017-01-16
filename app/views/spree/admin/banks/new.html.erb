@@ -1,0 +1,13 @@
+<% content_for :page_title do %>
+  <%= link_to "Bancos", spree.admin_banks_path %> /
+  Novo Banco
+<% end %>
+
+<%= render partial: 'spree/admin/shared/error_messages', locals: { target: @bank } %>
+
+<div>
+  <%= form_for @bank, url: spree.admin_banks_path do |f| %>
+    <%= render partial: 'form', locals: {f: f} %>
+    <%= render partial: 'spree/admin/shared/new_resource_links', locals: { collection_url: spree.admin_banks_path } %>
+  <% end %>
+</div>

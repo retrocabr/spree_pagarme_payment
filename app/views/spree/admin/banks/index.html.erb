@@ -1,0 +1,79 @@
+<% content_for :page_title do %>
+    Bancos
+<% end %>
+
+<% content_for :page_actions do %>
+    <%= button_link_to "Novo Banco", new_admin_bank_path, class: "btn-success", icon: 'add' %>
+<% end %>
+
+<% content_for :table_filter do %>
+  <div data-hook="admin_bank_index_search">
+
+    <%= search_form_for [:admin, @search] do |f| %>
+      <div class="row">
+        <div class="col-md-4">
+          <div class="form-group">
+            <%= label_tag :q_name_cont, "Nome" %>
+            <%= f.text_field :name_cont, class: 'form-control js-quick-search-target' %>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="form-group">
+            <%= label_tag :q_code_eq, "Código" %>
+            <%= f.text_field :code_eq, class: 'form-control' %>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="form-group">
+            <div class="checkbox">
+              <%= label_tag 'q_bookmarked_eq' do %>
+                <%= f.check_box :bookmarked_eq, {}, '1', '0' %>
+                Apenas favoritos
+              <% end %>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div data-hook="admin_orders_index_search_buttons" class="form-actions">
+        <%= button Spree.t(:filter_results), 'search' %>
+      </div>
+    <% end %>
+
+  </div>
+<% end %>
+
+<% if @banks.any? %>
+  <table class="table">
+    <thead>
+      <th>Nome</th>
+      <th>Código</th>
+      <th>Favorito?</th>
+      <th data-hook="admin_banks_index_header_actions" class="actions" style="width: 90px;"></th>
+    <thead>
+    <tbody>
+      <% @banks.each do |bank| %>
+        <tr>
+          <td><%= bank.name %></td>
+          <td class="text-center"><%= bank.code %></td>
+          <td class="text-center"><span class="label label-<%= bank.bookmarked? ? 'success' : 'danger' %>"><%= bank.bookmarked? ? 'sim' : 'não' %></span></td>
+          <td class="actions actions-2 text-right" data-hook="admin_banks_index_row_actions">
+            <% if can?(:edit, bank) %>
+              <%= link_to_edit_url spree.edit_admin_bank_path(bank), no_text: true %>
+            <% end %>
+            <% if can?(:destroy, bank) && bank %>
+              <%= link_to_delete bank, no_text: true, url: spree.admin_bank_path(bank) %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <div class="alert alert-info no-objects-found">
+    <%= Spree.t(:no_resource_found, resource: plural_resource_name(Spree::Bank)) %>
+  </div>
+<% end %>

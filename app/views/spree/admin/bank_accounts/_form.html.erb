@@ -1,0 +1,99 @@
+<div class="row">
+  <%= f.hidden_field :user_id, value: @user.id %>
+
+  <div class="col-md-8">
+    <%= f.field_container :pagarme_id, class: ['form-group', ('has-error has-feedback' if @bank_account.pagarme_id.nil?)] do %>
+      <%= f.label :pagarme_id, "ID Pagarme" %>
+      <%= f.text_field :pagarme_id, class: 'form-control', readonly: true, placeholder: "Não foi possível criar a conta bancária no Pagar.me" %>
+      <% if @bank_account.pagarme_id.nil? %>
+        <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true"></span>
+      <% end %>
+      <%= f.error_message_on :pagarme_id %>
+    <% end %>
+  </div>
+
+  <div class="col-md-4">
+    <label>Pagar.me</label>
+    <%= button_tag class: "btn btn-primary btn-block", disabled: @bank_account.pagarme_id.nil?, type: "button" do %>
+      <i class="glyphicon glyphicon-eye-open"></i> Checar dados
+    <% end %>
+  </div>
+
+  <div id="pagarme-info" class="col-md-12"></div>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <%= f.field_container :banco, class: ['form-group'] do %>
+      <%= f.label :banco, "Nome do banco" %>
+      <%= f.text_field :banco, class: 'form-control' %>
+      <%= f.error_message_on :banco %>
+    <% end %>
+  </div>
+
+  <div class="col-md-6">
+    <%= f.field_container :bank_id, class: ['form-group', ('has-error' if @bank_account.bank_id.nil?)] do %>
+      <%= f.label :bank_id, "Banco (Código)" %>
+      <%= f.select :bank_id, Spree::Bank.all.map{ |b| ["#{b.name} (#{b.code})", b.id] }, {:include_blank => true}, :class => 'select2 fullwidth' %>
+      <%= f.error_message_on :bank_id %>
+    <% end %>
+  </div>
+
+  <div class="col-md-8">
+    <%= f.field_container :nome, class: ['form-group', ('has-error' if @bank_account.bank_id.nil?)] do %>
+      <%= f.label :nome %>
+      <%= f.text_field :nome, class: 'form-control' %>
+      <%= f.error_message_on :nome %>
+    <% end %>
+  </div>
+
+  <div class="col-md-4">
+    <%= f.field_container :cpf, class: ['form-group', ('has-error' if @bank_account.cpf.nil? && @bank_account.cnpj.nil?)] do %>
+      <%= f.label :cpf %>
+      <%= f.text_field :cpf, class: 'form-control', disabled: (@bank_account.cnpj != "" and !@bank_account.cnpj.nil?) %>
+      <%= f.error_message_on :cpf %>
+    <% end %>
+  </div>
+
+  <div class="col-md-4">
+    <%= f.field_container :agencia, class: ['form-group', ('has-error' if @bank_account.agencia.nil?)] do %>
+      <%= f.label :agencia %>
+      <%= f.text_field :agencia, class: 'form-control' %>
+      <%= f.error_message_on :agencia %>
+    <% end %>
+  </div>
+
+  <div class="col-md-4">
+    <%= f.field_container :conta, class: ['form-group', ('has-error' if @bank_account.conta.nil?)] do %>
+      <%= f.label :conta %>
+      <%= f.text_field :conta, class: 'form-control' %>
+      <%= f.error_message_on :conta %>
+    <% end %>
+  </div>
+
+  <div class="col-md-4">
+    <%= f.field_container :cnpj, class: ['form-group', ('has-error' if @bank_account.cpf.nil? && @bank_account.cnpj.nil?)] do %>
+      <%= f.label :cnpj %>
+      <%= f.text_field :cnpj, class: 'form-control', disabled: (@bank_account.cpf != "" and !@bank_account.cpf.nil?) %>
+      <%= f.error_message_on :cnpj %>
+    <% end %>
+  </div>
+
+  <div class="col-md-12">
+    <%= f.field_container :obs, class: ['form-group'] do %>
+      <%= f.label :obs %>
+      <%= f.text_area :obs, class: 'form-control', rows: 5 %>
+      <%= f.error_message_on :obs %>
+    <% end %>
+  </div>
+
+</div>
+
+<script type="text/javascript">
+$(function(){
+  var bank_list = <%= raw Spree::Bank.all.collect(&:name) %>;
+  $( "#bank_account_banco" ).autocomplete({
+    source: bank_list
+  });
+});
+</script>
