@@ -11,8 +11,7 @@ module Spree
     validates :user_id, presence: true
 
     belongs_to :user
-    has_many :products
-    belongs_to :bank_account
+    has_one :bank_account
 
     after_update :update_recipient
 

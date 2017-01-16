@@ -7,7 +7,7 @@ module Spree
 
     belongs_to :user
     belongs_to :bank
-    has_many :pagarme_recipients
+    belongs_to :pagarme_recipients
 
     after_update :update_bank, :update_pagarme_bank_account
     after_create :update_bank, :get_bank_account
