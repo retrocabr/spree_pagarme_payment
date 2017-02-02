@@ -15,6 +15,18 @@ module Spree
 
     after_update :update_recipient
 
+    def self.default_recipient
+      master = self.where(recipient_type: "master").first
+      unless master
+        PagarMe.api_key = ENV['PAGARME_API_KEY']
+        pagarme_recebedor = PagarMe::Company.default_recipient
+        master = Spree::PagarmeRecipient.create({
+          pagarme_id: pagarme_recebedor.id,
+          recipient_type: "master"
+        })
+      end
+    end
+
     def get_recipient(transfer_enabled = true, transfer_interval = 'monthly', transfer_day = 30)
       PagarMe.api_key = ENV['PAGARME_API_KEY']
       if self.pagarme_id

@@ -1,7 +1,10 @@
 module Spree
   class PaymentMethod::PagarmeMethod < PaymentMethod
-    # attr_protected
-    # attr_accessor :order_id
+    preference :auto_split, :boolean, default: false
+    # https://pagarme.zendesk.com/hc/pt-br/articles/204766729-Qual-%C3%A9-o-desconto-de-transfer%C3%AAncia-cobrado-
+    preference :transfer_fee, :decimal, default: 3.67
+    preference :use_boleto, :boolean, default: true
+    preference :use_credit_cart, :boolean, default: true
 
     has_many :payments, :as => :source
   
@@ -36,9 +39,14 @@ module Spree
     end
 
     def code(payment)
-      # pagarme_payment = payment.pagarme_payment.present? ? payment.pagarme_payment : Spree::PagSeguroPayment.new(payment_id: payment.id)
-      # pagarme_payment.process!(1) if pagarme_payment.transaction_id.nil?
-      # pagarme_payment.transaction_id
+      
+    end
+
+    def available_methods
+      methods = []
+      methods << "boleto" if preferred_use_boleto
+      methods << "credit_card" if preferred_use_credit_cart
+      return methods.join(",")
     end
 
   end

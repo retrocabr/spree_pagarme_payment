@@ -1,19 +1,17 @@
 <% content_for :head do %>
 <script src="https://assets.pagar.me/checkout/checkout.js"></script>
-<% pagarme_methods = 'credit_card,boleto' %>
+<% pagarme_payment_method = Spree::PaymentMethod.find_by_name("Pagar.me") %>
+<% pagarme_methods = pagarme_payment_method.available_methods %>
 <%= javascript_include_tag 'spree/frontend/spree_pagarme_payment', { :id => "pagarme_script", 'data-crypt' => ENV['PAGARME_CRYPTKEY'], 'data-paymentmethods' => pagarme_methods } %>
 <% end %>
 
 <%= hidden_field_tag("pagarme_payment", 1) %>
 <%= form.fields_for :payments, Spree::Payment.new do |p| %>
-<%= p.hidden_field :payment_method_id, :value => Spree::PaymentMethod.find_by_name("Pagar.me").id
-%>
+<%= p.hidden_field :payment_method_id, :value => pagarme_payment_method.id %>
 	<%= p.fields_for :pagarme_payment, p.object.build_pagarme_payment do |pp| %>
 		<%= pp.hidden_field :card_hash %>
 		<%= pp.hidden_field :payment_method %>
 		<%= pp.hidden_field :installments %>
-		<%# postback_url = ENV['TEST_POSTBACK'] %>
-		<% postback_url = order_postback_path(@order) %>
-		<%= pp.hidden_field :postback, :value => postback_url %>
+		<%= pp.hidden_field :postback, :value => order_postback_path(@order) %>
 	<% end %>
 <% end %>

@@ -9,10 +9,6 @@ module Spree
 
 		# validates :payment_id, presence: true
 
-		# def recipients
-		#		[]
-		# end
-
 		# def split_rules
 		# 	self.recipients.collect do |recipient|
 		# 		{ recipient_id: recipient, percentage: 100 }
@@ -52,7 +48,7 @@ module Spree
 						:born_at => a.birth_date.to_date.strftime("%m-%d-%Y")
 					},
 					# :split_rules => [
-					# 	{ recipient_id: ENV['RETROCA_RECIPIENT_ID'], percentage: 100 }
+					# 	{ recipient_id: Spree::PagarmeRecipient.default_recipient, percentage: 100 }
 					# ],
 					:metadata => {
 						:order => order.number
