@@ -3,7 +3,7 @@ require 'pagarme'
 
 module Spree
   class BankAccount < Spree::Base
-    default_scope { order('created_at DESC') }
+    default_scope { where(deleted_at: nil).order('created_at ASC') }
 
     belongs_to :user
     belongs_to :bank
@@ -13,6 +13,19 @@ module Spree
     after_create :update_bank, :get_bank_account
 
     scope :valid, -> { where.not(pagarme_id: nil) }
+    scope :invalid, -> { where(pagarme_id: nil) }
+
+    def destroy
+      self.update_attributes(deleted_at: DateTime.current)
+    end
+
+    def delete
+      destroy
+    end
+
+    def deleted?
+      self.deleted_at.present?
+    end
 
     def to_s
       [banco, agencia, conta, (cpf ? cpf : cnpj), nome, obs].join(" / ")
@@ -35,6 +48,10 @@ module Spree
 
     def valid?
       !pagarme_id.nil?
+    end
+
+    def is_default?
+      id == 2
     end
 
     def get_bank_account
