@@ -7,6 +7,11 @@
 
 <%= render partial: 'spree/admin/shared/error_messages', locals: { target: @bank_account } %>
 
+<% unless @bank_account.can_update? %>
+    <div class="alert alert-danger">
+        Não é possível editar essa Conta Bancária. Por favor, crie um novo.
+    </div>
+<% end %>
 
 <%= form_for @bank_account, url: spree.admin_user_bank_account_path(@user, @bank_account) do |f| %>
   <%= render partial: 'form', locals: {f: f} %>

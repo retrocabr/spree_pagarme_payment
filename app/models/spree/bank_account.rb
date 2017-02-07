@@ -3,13 +3,14 @@ require 'pagarme'
 
 module Spree
   class BankAccount < Spree::Base
-    default_scope { where(deleted_at: nil).order('created_at ASC') }
+    default_scope { where(deleted_at: nil).order('is_default DESC') }
 
     belongs_to :user
     belongs_to :bank
     belongs_to :pagarme_recipients
 
-    after_update :update_bank, :update_pagarme_bank_account
+    after_save :update_bank, :update_pagarme_bank_account
+    before_validation :check_if_can_update
     after_create :update_bank, :get_bank_account
 
     scope :valid, -> { where.not(pagarme_id: nil) }
@@ -46,12 +47,12 @@ module Spree
       return true
     end
 
-    def valid?
-      !pagarme_id.nil?
+    def is_valid?
+      return pagarme_id.nil? ? false : true
     end
 
-    def is_default?
-      id == 2
+    def can_update?
+      withdrawals.completed.size > 0 || deleted? ? false : true
     end
 
     def get_bank_account
@@ -84,6 +85,10 @@ module Spree
       end
     end
 
+    def changed_critical_columns?
+      (self.banco_changed? || self.agencia_changed? || self.conta_changed? || self.cpf_changed? || self.nome_changed?) ? true : false
+    end
+
     private
 
     def update_bank
@@ -95,10 +100,18 @@ module Spree
       end
     end
 
+    def check_if_can_update
+      (changed_critical_columns? and !self.can_update?) ? false : true
+    end
+
     def update_pagarme_bank_account
       # Cant simply update bank_account, must create a new one
-      self.update_column(:pagarme_id, nil)
-      get_bank_account
+      if changed_critical_columns?
+        if can_update?
+          self.update_column(:pagarme_id, nil)
+          get_bank_account
+        end
+      end
     end
 
   end
