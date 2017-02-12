@@ -9,9 +9,9 @@ module Spree
     belongs_to :bank
     belongs_to :pagarme_recipients
 
-    after_save :update_bank, :update_pagarme_bank_account
+    after_save :update_bank #,  :update_pagarme_bank_account # TODO: CONSIGNADO:
     before_validation :check_if_can_update
-    after_create :update_bank, :get_bank_account
+    after_create :update_bank #, :get_bank_account # TODO: CONSIGNADO:
 
     scope :valid, -> { where.not(pagarme_id: nil) }
     scope :invalid, -> { where(pagarme_id: nil) }
@@ -48,7 +48,7 @@ module Spree
     end
 
     def is_valid?
-      return pagarme_id.nil? ? false : true
+      complete? # return pagarme_id.nil? ? false : true # TODO: CONSIGNADO:
     end
 
     def can_update?
