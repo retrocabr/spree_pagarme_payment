@@ -5,6 +5,7 @@ module Spree
     preference :transfer_fee, :decimal, default: 3.67
     preference :use_boleto, :boolean, default: true
     preference :use_credit_cart, :boolean, default: true
+    preference :fee_free_bank, :integer, default: nil
 
     has_many :payments, :as => :source
   
