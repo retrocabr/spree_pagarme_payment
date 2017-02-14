@@ -8,7 +8,10 @@ Spree::Core::Engine.routes.draw do
     resources :banks
 
     resources :users do
-      resources :bank_accounts
+      resources :bank_accounts do
+        post 'revalidate', :on => :member
+        post 'check_pagarme', :on => :member
+      end
     end
   end
   

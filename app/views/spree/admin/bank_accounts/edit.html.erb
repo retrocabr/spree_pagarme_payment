@@ -1,19 +1,27 @@
 <%= render partial: 'spree/admin/users/sidebar', locals: { current: :bank_accounts } %>
 
 <% content_for :page_title do %>
-    <%= link_to @user.email, spree.edit_admin_user_url(@user) %> /
-    Editar Conta Bancária
+  <%= link_to @user.email, spree.edit_admin_user_url(@user) %> /
+  Editar Conta Bancária
 <% end %>
 
 <%= render partial: 'spree/admin/shared/error_messages', locals: { target: @bank_account } %>
 
 <% unless @bank_account.can_update? %>
-    <div class="alert alert-danger">
-        Não é possível editar essa Conta Bancária. Por favor, crie um novo.
-    </div>
+  <div class="alert alert-danger">
+    Não é possível editar essa Conta Bancária. Por favor, crie um novo.
+  </div>
 <% end %>
 
 <%= form_for @bank_account, url: spree.admin_user_bank_account_path(@user, @bank_account) do |f| %>
   <%= render partial: 'form', locals: {f: f} %>
   <%= render partial: 'spree/admin/shared/edit_resource_links', locals: { collection_url: admin_user_bank_accounts_path(@user) } %>
 <% end %>
+
+<%= form_tag revalidate_admin_user_bank_account_path(@user, @bank_account), :method => :post, :remote => true, id: "revalidation_form" do %>
+<% end %>
+
+<%= form_tag check_pagarme_admin_user_bank_account_path(@user, @bank_account), :method => :post, :remote => true, id: "check_pagarme_form" do %>
+<% end %>
+
+<%= render partial: 'pagarme_modal' %>

@@ -9,9 +9,9 @@ module Spree
     belongs_to :bank
     belongs_to :pagarme_recipients
 
-    after_save :update_bank #,  :update_pagarme_bank_account # TODO: CONSIGNADO:
+    after_save :update_bank, :update_pagarme_bank_account
     before_validation :check_if_can_update
-    after_create :update_bank #, :get_bank_account # TODO: CONSIGNADO:
+    after_create :update_bank, :get_bank_account
 
     scope :valid, -> { where.not(pagarme_id: nil) }
     scope :invalid, -> { where(pagarme_id: nil) }
@@ -29,7 +29,7 @@ module Spree
     end
 
     def to_s
-      [banco, agencia, conta, (cpf ? cpf : cnpj), nome, obs].join(" / ")
+      [banco, agencia, conta, (cpf ? cpf : cnpj), nome, obs, (is_valid? ? "" : "*")].join(" / ")
     end
 
     def bank_code
@@ -48,11 +48,11 @@ module Spree
     end
 
     def is_valid?
-      complete? # return pagarme_id.nil? ? false : true # TODO: CONSIGNADO:
+      (!complete? or pagarme_id.nil?) ? false : true
     end
 
     def can_update?
-      withdrawals.completed.size > 0 || deleted? ? false : true
+      (withdrawals.completed.size > 0 || deleted?) ? false : true
     end
 
     def get_bank_account
@@ -105,9 +105,10 @@ module Spree
     end
 
     def update_pagarme_bank_account
-      # Cant simply update bank_account, must create a new one
       if changed_critical_columns?
-        if can_update?
+        if self.pagarme_id.nil?
+          get_bank_account
+        elsif can_update?
           self.update_column(:pagarme_id, nil)
           get_bank_account
         end

@@ -49,6 +49,7 @@
 <% if @banks.any? %>
   <table class="table">
     <thead>
+      <th># ID</th>
       <th>Nome</th>
       <th>Código</th>
       <th>Favorito?</th>
@@ -57,6 +58,7 @@
     <tbody>
       <% @banks.each do |bank| %>
         <tr>
+          <td><%= bank.id %></td>
           <td><%= bank.name %></td>
           <td class="text-center"><%= bank.code %></td>
           <td class="text-center"><span class="label label-<%= bank.bookmarked? ? 'success' : 'danger' %>"><%= bank.bookmarked? ? 'sim' : 'não' %></span></td>

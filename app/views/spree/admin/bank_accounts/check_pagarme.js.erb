@@ -1,0 +1,63 @@
+$("#pagarme_data").find(".modal-body").remove();
+$("#pagarme_data").find("table").remove();
+
+<% if @pagarme_data %>
+
+  var $table = $('<table class="table">');
+  $table.append("<tr><th># ID</th><td><%= @pagarme_data.id %></td></tr>");
+  $table.append('<tr><th>Nome</th><td><%= @pagarme_data.legal_name %></td></tr>');
+  <% bank = Spree::Bank.find_by_code(@pagarme_data.bank_code) %>
+  $table.append('<tr><th>Código Banco</th><td><%= "#{@pagarme_data.bank_code} #{'- '+bank.name if bank}" %></td></tr>');
+  $table.append('<tr><th>Agência</th><td><%= "#{@pagarme_data.agencia}#{'-'+@pagarme_data.agencia_dv if @pagarme_data.agencia_dv}" %></td></tr>');
+  $table.append('<tr><th>Conta</th><td><%= "#{@pagarme_data.conta}#{'-'+@pagarme_data.conta_dv}" %></td></tr>');
+  $table.append('<tr><th>Tipo</th><td><%= @pagarme_data.type %></td></tr>');
+  $table.append('<tr><th>Documento</th><td><%= @pagarme_data.document_number %> (<%= @pagarme_data.document_type.upcase %>)</td></tr>');
+  <% if @pagarme_data.chage_transfer_fees.nil? %>
+    $table.append('<tr><th>Cobrar TEF?</th><td><span class="label label-default">Não especificado</span></td></tr>');
+  <% elsif @pagarme_data.chage_transfer_fees %>
+    $table.append('<tr><th>Cobrar TEF?</th><td><span class="label label-success">Sim</span></td></tr>');
+  <% else %>
+    $table.append('<tr><th>Cobrar TEF?</th><td><span class="label label-danger">Não</span></td></tr>');
+  <% end %>
+  $table.append('<tr><th>Criado em</th><td><%= display_date @pagarme_data.date_created.to_datetime %></td></tr>');
+  $("#pagarme_data").find(".modal-content").append($table);
+
+  if($("#revalidate_button").length > 0){
+    $new_button = $('<%= button_tag class: "btn btn-primary btn-block", id: "check_pagarme_data", type: "button" do %><i class="glyphicon glyphicon-eye-open"></i> Checar dados<% end %>')
+    $('#revalidate_button').after($new_button);
+    $("#revalidate_button").remove();
+
+    $new_button.on("click", function(){
+      $("#check_pagarme_form").submit();
+    });
+  }
+
+  if($("#bank_account_pagarme_id").length > 0){
+    $("#bank_account_pagarme_id").val("<%= @pagarme_data.id %>");
+    $("#bank_account_pagarme_id").siblings(".form-control-feedback").remove();
+    $("#bank_account_pagarme_id").closest('.form-group').removeClass("has-error has-feedback");
+  }
+
+  <% if params[:withdrawal_id] %>
+    <% if withdrawal = Spree::Withdrawal.find(params[:withdrawal_id]) %>
+      $("#revalidate_<%= withdrawal.id %>_btn_container").remove();
+      $("#saque_<%= withdrawal.id %>_transfer_btn_container").show();
+      <% if withdrawal.can_transfer? %>
+        $("#saque_<%= withdrawal.id %>_transfer_btn_container").find("button").attr("disabled", false);
+      <% end %>
+    <% end %>
+  <% end %>
+
+<% else %>
+
+  var $container = $('<div class="modal-body">');
+  var $alert = $('<div class="alert alert-warning" style="margin-bottom: 0;">').text("ERRO: Conta Bancária não encontrada no Pagar.Me.").appendTo($container);
+  $('#pagarme_data').find('.modal-content').append($container);
+
+  $("#bank_account_pagarme_id").val("");
+  $("#bank_account_pagarme_id").after('<span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true"></span>');
+  $("#bank_account_pagarme_id").closest('.form-group').addClass("has-error has-feedback");
+
+<% end %>
+
+$('#pagarme_data').modal();
