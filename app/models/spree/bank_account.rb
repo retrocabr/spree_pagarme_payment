@@ -60,27 +60,31 @@ module Spree
       if self.pagarme_id
         PagarMe::BankAccount.find(self.pagarme_id)
       else
-        if complete?
+        if complete? && charge_transfer_fees
           _agencia = agencia.split('-')
           _conta = conta.split('-')
           _banco = bank.code
           _doc_type = cpf ? "cpf" : "cnpj"
           _doc_number = cpf ? cpf : cnpj
 
-          pagarme_bank_account = PagarMe::BankAccount.create({
-            :bank_code => _banco,
-            :agencia => _agencia[0],
-            :agencia_dv => _agencia[1],
-            :conta => _conta[0],
-            :conta_dv => _conta[1],
-            :legal_name => nome,
-            :document_type => _doc_type,
-            :document_number => _doc_number,
-            :charge_transfer_fees => charge_transfer_fees? ? true : false
-          })
+          begin
+            pagarme_bank_account = PagarMe::BankAccount.create({
+              :bank_code => _banco,
+              :agencia => _agencia[0],
+              :agencia_dv => _agencia[1],
+              :conta => _conta[0],
+              :conta_dv => _conta[1],
+              :legal_name => nome,
+              :document_type => _doc_type,
+              :document_number => _doc_number,
+              :charge_transfer_fees => charge_transfer_fees? ? true : false
+            })
 
-          self.update_column(:pagarme_id, pagarme_bank_account.id)
-          pagarme_bank_account
+            self.update_column(:pagarme_id, pagarme_bank_account.id)
+            pagarme_bank_account
+          rescue => e
+            errors.add(:base, "Erro ao enviar informações ao Pagar.me")
+          end
         end
       end
     end

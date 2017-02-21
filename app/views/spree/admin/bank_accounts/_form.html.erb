@@ -103,7 +103,7 @@ $(function(){
   });
 
   $("#revalidate_button").on("click", function(){
-    <% if @errors.size > 0 && false %>
+    <% if @errors and @errors.size > 0 && false %>
       <% @errors.each do |error| %>
         alert("<%= error %>");
       <% end %>
