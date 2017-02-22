@@ -67,7 +67,7 @@ module Spree
           _doc_type = cpf ? "cpf" : "cnpj"
           _doc_number = cpf ? cpf : cnpj
 
-          begin
+          # begin
             pagarme_bank_account = PagarMe::BankAccount.create({
               :bank_code => _banco,
               :agencia => _agencia[0],
@@ -82,9 +82,9 @@ module Spree
 
             self.update_column(:pagarme_id, pagarme_bank_account.id)
             pagarme_bank_account
-          rescue => e
-            errors.add(:base, "Erro ao enviar informações ao Pagar.me")
-          end
+          # rescue => e
+          #   errors.add(:base, "Erro ao enviar informações ao Pagar.me")
+          # end
         end
       end
     end
