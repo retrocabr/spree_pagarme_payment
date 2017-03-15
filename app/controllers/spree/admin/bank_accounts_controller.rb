@@ -52,13 +52,25 @@ module Spree
       # admin_user_bank_account_path
       def update
         @bank_account = Spree::BankAccount.find(params[:id])
+        bank = Spree::Bank.find(params[:bank_account][:bank_id])
 
-        respond_to do |format|
-          if @bank_account.update_attributes(bank_account_params)
-            format.html { redirect_to admin_user_bank_accounts_path, notice: 'Dados bancários atualizados com sucesso.' }
-          else
-            format.html { render action: "edit" }
+        if bank
+          params[:bank_account][:banco] = bank.name
+        end
+
+        if @bank_account.can_update?
+
+          respond_to do |format|
+            if @bank_account.update_attributes(bank_account_params)
+              format.html { redirect_to admin_user_bank_accounts_path, notice: 'Dados bancários atualizados com sucesso.' }
+            else
+              format.html { render action: "edit" }
+            end
           end
+
+        else
+          flash[:error] = "Proibido editar esta conta bancária! Crie uma nova."
+          redirect_to admin_user_bank_accounts_path and return
         end
       end
 

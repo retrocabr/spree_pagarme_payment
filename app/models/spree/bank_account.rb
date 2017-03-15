@@ -57,35 +57,29 @@ module Spree
 
     def get_bank_account
       PagarMe.api_key = ENV['PAGARME_API_KEY']
-      if self.pagarme_id
+      if !self.pagarme_id.nil?
         PagarMe::BankAccount.find(self.pagarme_id)
-      else
-        if complete? && charge_transfer_fees
-          _agencia = agencia.split('-')
-          _conta = conta.split('-')
-          _banco = bank.code
-          _doc_type = cpf ? "cpf" : "cnpj"
-          _doc_number = cpf ? cpf : cnpj
+      elsif complete? && !charge_transfer_fees.nil?
+        _agencia = agencia.split('-')
+        _conta = conta.split('-')
+        _banco = bank.code
+        _doc_type = cpf ? "cpf" : "cnpj"
+        _doc_number = cpf ? cpf : cnpj
 
-          # begin
-            pagarme_bank_account = PagarMe::BankAccount.create({
-              :bank_code => _banco,
-              :agencia => _agencia[0],
-              :agencia_dv => _agencia[1],
-              :conta => _conta[0],
-              :conta_dv => _conta[1],
-              :legal_name => nome,
-              :document_type => _doc_type,
-              :document_number => _doc_number,
-              :charge_transfer_fees => charge_transfer_fees? ? true : false
-            })
+        pagarme_bank_account = PagarMe::BankAccount.create({
+          :bank_code => _banco,
+          :agencia => _agencia[0],
+          :agencia_dv => _agencia[1],
+          :conta => _conta[0],
+          :conta_dv => _conta[1],
+          :legal_name => nome,
+          :document_type => _doc_type,
+          :document_number => _doc_number,
+          :charge_transfer_fees => charge_transfer_fees? ? true : false
+        })
 
-            self.update_column(:pagarme_id, pagarme_bank_account.id)
-            pagarme_bank_account
-          # rescue => e
-          #   errors.add(:base, "Erro ao enviar informações ao Pagar.me")
-          # end
-        end
+        self.update_column(:pagarme_id, pagarme_bank_account.id)
+        pagarme_bank_account
       end
     end
 
@@ -100,6 +94,10 @@ module Spree
       if b
         self.update_column(:bank_id, b.id)
       else
+        # bank2 = self.banco.split(" (")
+        # bank2.pop
+        # bank2.join(" (")
+        # b = Spree::Bank.where("name LIKE ?", "%#{bank2}%").first
         self.update_column(:bank_id, nil)
       end
     end
